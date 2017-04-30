@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Car</title>
+</head>
+<body onload="startGame();">
+  <canvas id="gamecanvas" style="width:300px; height:200px;border:1px solid black;">
+    Your browser does not support HTML 5.
+    သင်၏ browser သည် HTML 5 ကို အထောက်အပံ့မပေးပါ။
+  </canvas>
+  <script>
+  var myCar;
+  var myGameArea = {
+    canvas: document.getElementById('gamecanvas'),
+    start:function(){
+      this.canvas.width = 300;
+      this.canvas.height = 200;
+      this.context = this.canvas.getContext("2d");
+      this.interval = setInterval(updateGameBoard,20);
+      window.addEventListener('keydown',function(e){
+  			myGameArea.keys=(myGameArea.keys || []);
+        myGameArea.keys[e.keyCode] = true;
+  		});
+  		window.addEventListener('keyup',function(e){
+  			myGameArea.keys[e.keyCode]=false;
+  		});
+    },
+    clear:function(){
+      this.context.clearRect(0,0,this.canvas.width,this.canvas.height);
+    }
+  }
+  function Car(x,y){
+    this.x=x;
+    this.y=y;
+    this.rotate =0;
+    this.update = function(){
+      ctx = myGameArea.context;
+      ctx.save();
+      //total lenght 24, total height 20
+      ctx.translate(this.x,this.y);
+      ctx.rotate(this.rotate);
+      ctx.fillRect(-12,-10,19,20);
+      ctx.fillRect(7,-8,5,16);
+      ctx.restore();
+    };
+    this.moveForward = function(){
+      this.x+= 2*Math.cos(this.rotate);
+      this.y+= 2*Math.sin(this.rotate);
+      if(this.isHit()) this.moveBackward();
+    }
+    this.moveBackward = function(){
+      this.x-= 2*Math.cos(this.rotate);
+      this.y-= 2*Math.sin(this.rotate);
+      if(this.isHit()) this.moveForward();
+    }
+    this.rotateLeft = function(){
+      this.rotate-= Math.PI/180;
+    }
+    this.rotateRight = function(){
+      this.rotate+= Math.PI/180;
+    }
+    this.isHit = function(){
+      if(this.x+12>myGameArea.canvas.width || this.x-12<0|| this.y-10<0 || this.y+10>myGameArea.canvas.height){
+        return true;
+      }
+      
+      return false;
+    }
+  }
+
+  function updateGameBoard(){
+    if(myGameArea.keys && myGameArea.keys[37]==true){myCar.rotateLeft();}
+    if(myGameArea.keys && myGameArea.keys[38]==true){myCar.moveForward();}
+    if(myGameArea.keys && myGameArea.keys[39]==true){myCar.rotateRight();}
+    if(myGameArea.keys && myGameArea.keys[40]==true){myCar.moveBackward();}
+    myGameArea.clear();
+    myCar.update();
+  }
+  function startGame(){
+    myGameArea.start();
+    myCar = new Car(12,10);
+  }
+  </script>
+</body>

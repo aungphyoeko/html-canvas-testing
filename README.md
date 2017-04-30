@@ -1,1 +1,1 @@
-# html-canvas-testing
+# Just testing HTML canvas and javascript
